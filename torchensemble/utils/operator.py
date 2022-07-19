@@ -39,8 +39,13 @@ def onehot_encoding(label, n_classes):
 def pseudo_residual_classification(target, output, n_classes):
     """
     Compute the pseudo residual for classification with cross-entropyloss."""
+    # target: torch.Size([batch_size])
     y_onehot = onehot_encoding(target, n_classes)
-
+    # y_onehot: torch.Size([batch_size, nb_classes])
+    
+    # F.softmax(output, dim=1): torch.Size([batch_size, nb_classes]) torch.float32
+    
+    # residual = target (one-hot encoded) - model_output (after softmax)
     return y_onehot - F.softmax(output, dim=1)
 
 

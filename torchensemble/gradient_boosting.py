@@ -254,8 +254,10 @@ class _BaseGradientBoosting(BaseModule):
                     data, target = io.split_data_target(elem, self.device)
 
                     # Compute the learning target of the current estimator
+                    # residual = target (one-hot encoded) - model_output (after softmax)
+                    # residual: torch.Size([batch_size, nb_classes]) torch.float32
                     residual = self._pseudo_residual(est_idx, target, *data)
-
+                    
                     output = estimator(*data)
                     loss = criterion(output, residual)
 
@@ -331,10 +333,13 @@ class GradientBoostingClassifier(_BaseGradientBoosting, BaseClassifier):
                 estimator(*x) for estimator in self.estimators_[:est_idx]
             ]
             output += op.sum_with_multiplicative(results, self.shrinkage_rate)
+
+        # output: torch.Size([batch_size, nb_classes]) torch.float32
         pseudo_residual = op.pseudo_residual_classification(
             y, output, self.n_outputs
         )
-
+        # pseudo_residual: torch.Size([batch_size, nb_classes]) torch.float32
+        
         return pseudo_residual
 
     def _handle_early_stopping(self, test_loader, est_idx):

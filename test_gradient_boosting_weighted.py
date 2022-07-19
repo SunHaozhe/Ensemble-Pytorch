@@ -37,8 +37,11 @@ transform = transforms.Compose([
 train = datasets.MNIST('../Dataset', train=True,
                        download=True, transform=transform)
 test = datasets.MNIST('../Dataset', train=False, transform=transform)
-train_loader = torch.utils.data.DataLoader(train, batch_size=32, shuffle=True)
-test_loader = torch.utils.data.DataLoader(test, batch_size=32, shuffle=True)
+train_loader = torch.utils.data.DataLoader(train, batch_size=128, shuffle=True)
+test_loader = torch.utils.data.DataLoader(test, batch_size=128, shuffle=True)
+
+# for debug purpose, test_dataset is smaller than train_dataset
+train_loader = test_loader
 
 # Set the Logger
 logger = set_logger('classification_mnist_mlp')
@@ -46,7 +49,7 @@ logger = set_logger('classification_mnist_mlp')
 # Define the ensemble
 model = GradientBoostingClassifier(
     estimator=MLP,
-    n_estimators=3,
+    n_estimators=2,
     cuda=False,
     shrinkage_rate=1
 )
@@ -71,6 +74,6 @@ model.set_optimizer('Adam', lr=1e-3, weight_decay=5e-4)
 # Train and Evaluate
 model.fit(
     train_loader,
-    epochs=3,
+    epochs=1,
     test_loader=test_loader,
 )
