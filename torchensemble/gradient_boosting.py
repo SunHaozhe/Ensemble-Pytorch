@@ -398,7 +398,16 @@ class GradientBoostingClassifier(_BaseGradientBoosting, BaseClassifier):
         save_model=True,
         save_dir=None,
     ):
-        self._criterion = nn.CrossEntropyLoss()
+        # compute class weights
+        import numpy as np
+        import sklearn
+        classes = train_loader.dataset.classes
+        class_weights = sklearn.utils.class_weight.compute_class_weight(
+            class_weight="balanced", classes=np.unique(classes), y=np.asarray(classes))
+        class_weights = torch.tensor(class_weights, dtype=torch.float)
+        class_weights = class_weights.to(self.device)
+        
+        self._criterion = nn.CrossEntropyLoss(weight=class_weights)
         super().fit(
             train_loader=train_loader,
             epochs=epochs,
