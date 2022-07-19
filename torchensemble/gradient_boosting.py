@@ -397,17 +397,9 @@ class GradientBoostingClassifier(_BaseGradientBoosting, BaseClassifier):
         early_stopping_rounds=2,
         save_model=True,
         save_dir=None,
-    ):
-        # compute class weights
-        import numpy as np
-        import sklearn
-        classes = train_loader.dataset.classes
-        class_weights = sklearn.utils.class_weight.compute_class_weight(
-            class_weight="balanced", classes=np.unique(classes), y=np.asarray(classes))
-        class_weights = torch.tensor(class_weights, dtype=torch.float)
-        class_weights = class_weights.to(self.device)
-        
-        self._criterion = nn.CrossEntropyLoss(weight=class_weights)
+    ):  
+        #self._criterion = nn.CrossEntropyLoss(weight=class_weights)
+        print(id(self._criterion))
         super().fit(
             train_loader=train_loader,
             epochs=epochs,

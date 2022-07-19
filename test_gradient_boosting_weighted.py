@@ -1,7 +1,10 @@
+import numpy as np
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
 from torchvision import datasets, transforms
+
+import sklearn
 
 from torchensemble import GradientBoostingClassifier
 from torchensemble.utils.logging import set_logger
@@ -48,8 +51,18 @@ model = GradientBoostingClassifier(
     shrinkage_rate=1
 )
 
+# compute class weights
+classes = []
+for X, y in train_loader.dataset:
+    classes.append(y)
+class_weights = sklearn.utils.class_weight.compute_class_weight(
+    class_weight="balanced", classes=np.unique(classes), y=np.asarray(classes))
+class_weights = torch.tensor(class_weights, dtype=torch.float)
+class_weights = class_weights.to("cpu")
+
 # Set the criterion
-criterion = nn.CrossEntropyLoss()
+criterion = nn.CrossEntropyLoss(weight=class_weights)
+print(id(criterion))
 model.set_criterion(criterion)
 
 # Set the optimizer
