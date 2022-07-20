@@ -3,7 +3,7 @@ import torch.nn as nn
 from torch.nn import functional as F
 from torchvision import datasets, transforms
 
-from torchensemble import SnapshotEnsembleClassifier
+from torchensemble import FastGeometricClassifier
 from torchensemble.utils.logging import set_logger
 
 # Define Your Base Estimator
@@ -41,7 +41,7 @@ test_loader = torch.utils.data.DataLoader(test, batch_size=128, shuffle=True)
 logger = set_logger('classification_mnist_mlp')
 
 # Define the ensemble
-model = SnapshotEnsembleClassifier(
+model = FastGeometricClassifier(
     estimator=MLP,
     n_estimators=2,
     cuda=False,
@@ -59,5 +59,7 @@ model.fit(
     train_loader,
     epochs=2,
     test_loader=test_loader,
-    lr_clip=None,
+    cycle=4,
+    lr_1=5e-2,
+    lr_2=1e-4,
 )
