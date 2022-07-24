@@ -19,6 +19,7 @@ from .utils import io
 from .utils import set_module
 from .utils import operator as op
 
+from memory_profiler import profile
 
 __all__ = ["BaggingClassifier", "BaggingRegressor"]
 
@@ -130,9 +131,7 @@ class BaggingClassifier(BaseClassifier):
     def set_criterion(self, criterion):
         super().set_criterion(criterion)
 
-    @torchensemble_model_doc(
-        """Implementation on the training stage of BaggingClassifier.""", "fit"
-    )
+    @profile
     def fit(
         self,
         train_loader,
