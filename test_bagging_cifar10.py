@@ -68,7 +68,7 @@ logger = set_logger('bagging_cifar10_lenet5')
 # Define the ensemble
 model = BaggingClassifier(
     estimator=LeNet5,
-    n_estimators=2,
+    n_estimators=5,
     cuda=True,
     n_jobs=1,
 )
@@ -83,6 +83,6 @@ model.set_optimizer('Adam', lr=1e-3, weight_decay=5e-4)
 # Train and Evaluate
 model.fit(
     train_loader,
-    epochs=1,
+    epochs=100,
     test_loader=test_loader,
 )
